@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
 
 
     files = `git ls-files -z`.split("\x0")
-    s.files = files.grep(%r{^(app|config|db|lib|vendor/assets)/}) + ['README.rdoc', 'Rakefile', 'MIT-LICENSE']
+    s.files = files.grep(%r{^(app|config|db|lib|vendor/assets)/}) + ['README.md']
     s.test_files = files.grep(%r{^(spec)/})
 
   end
