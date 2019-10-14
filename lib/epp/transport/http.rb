@@ -12,7 +12,9 @@ module KonoEppClient::Transport
       @net_http.use_ssl = true
       @net_http.ssl_version = :TLSv1
       @net_http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-      #@net_http.ca_path = '/etc/ssl/certs' #COMMENTATA NEL MAC NON FUNZIONA, OCCHIO IN LINUX
+      
+      #FIXME: Commented because not work on MacOS (dev machine), is necessary for Linux machine?
+      #@net_http.ca_path = '/etc/ssl/certs' 
       
       # @net_http.set_debug_output $stderr
        #@net_http.set_debug_output File.open( "/tmp/net.log", "a")
