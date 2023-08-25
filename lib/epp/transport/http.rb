@@ -6,11 +6,11 @@ module KonoEppClient::Transport
 
     require 'pstore'
 
-    def initialize( server, port )
+    def initialize( server, port, ssl_version: :TLSv1 )
       @net_http = Net::HTTP.new( server, port )
 
       @net_http.use_ssl = true
-      @net_http.ssl_version = :TLSv1
+      @net_http.ssl_version = ssl_version
       @net_http.verify_mode = OpenSSL::SSL::VERIFY_PEER
       
       #FIXME: Commented because not work on MacOS (dev machine), is necessary for Linux machine?

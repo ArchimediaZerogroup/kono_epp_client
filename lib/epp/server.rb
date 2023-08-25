@@ -5,7 +5,7 @@ module KonoEppClient #:nodoc:
 
     require 'nokogiri'
 
-    attr_accessor :tag, :password, :server, :port, :old_server, :services, :lang, :extensions, :version, :credit, :timeout
+    attr_accessor :tag, :password, :server, :port, :ssl_version, :old_server, :services, :lang, :extensions, :version, :credit, :timeout
 
     # ==== Required Attrbiutes
     #
@@ -36,6 +36,7 @@ module KonoEppClient #:nodoc:
       @version    = attributes[:version]    || "1.0"
       @transport  = attributes[:transport]  || :tcp
       @timeout    = attributes[:timeout]    || 30
+      @ssl_version    = attributes[:ssl_version]    || :TLSv1
 
       @logged_in  = false
     end
@@ -244,7 +245,7 @@ module KonoEppClient #:nodoc:
       Timeout.timeout @timeout do
         @connection = case @transport
           when :tcp then KonoEppClient::Transport::TcpTransport.new( server, port )
-          when :http then KonoEppClient::Transport::HttpTransport.new( server, port )
+          when :http then KonoEppClient::Transport::HttpTransport.new( server, port, ssl_version: ssl_version)
         end
       end
     end
