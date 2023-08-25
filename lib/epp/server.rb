@@ -25,18 +25,18 @@ module KonoEppClient #:nodoc:
     def initialize(attributes = {})
       requires!(attributes, :tag, :password, :server)
 
-      @tag        = attributes[:tag]
-      @password   = attributes[:password]
-      @server     = attributes[:server]
-      @port       = attributes[:port]       || 700
-      @old_server = attributes[:old_server] || false
-      @lang       = attributes[:lang]       || "en"
-      @services   = attributes[:services]   || ["urn:ietf:params:xml:ns:domain-1.0", "urn:ietf:params:xml:ns:contact-1.0", "urn:ietf:params:xml:ns:host-1.0"]
-      @extensions = attributes[:extensions] || []
-      @version    = attributes[:version]    || "1.0"
-      @transport  = attributes[:transport]  || :tcp
-      @timeout    = attributes[:timeout]    || 30
-      @ssl_version    = attributes[:ssl_version]    || :TLSv1
+      @tag          = attributes[:tag]
+      @password     = attributes[:password]
+      @server       = attributes[:server]
+      @port         = attributes[:port]        || 700
+      @old_server   = attributes[:old_server]  || false
+      @lang         = attributes[:lang]        || "en"
+      @services     = attributes[:services]    || ["urn:ietf:params:xml:ns:domain-1.0", "urn:ietf:params:xml:ns:contact-1.0", "urn:ietf:params:xml:ns:host-1.0"]
+      @extensions   = attributes[:extensions]  || []
+      @version      = attributes[:version]     || "1.0"
+      @transport    = attributes[:transport]   || :tcp
+      @timeout      = attributes[:timeout]     || 30
+      @ssl_version  = attributes[:ssl_version] || :TLSv1
 
       @logged_in  = false
     end
