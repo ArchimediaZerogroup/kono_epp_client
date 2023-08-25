@@ -113,7 +113,7 @@ module KonoEppClient #:nodoc:
 
     # FIXME: Remove command wrappers?
     def hello
-      response = Hpricot.XML( send_request( KonoEppHello.new.to_s ) )
+      send_request( KonoEppHello.new.to_s )
     end
 
     def poll( id = nil )

@@ -4,7 +4,6 @@ require 'openssl'
 require 'socket'
 require 'active_support'
 require 'rexml/document'
-require 'hpricot'
 
 # Package files
 require File.dirname(__FILE__) + '/require_parameters.rb'

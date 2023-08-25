@@ -16,7 +16,6 @@ Gem::Specification.new do |s|
     s.test_files = files.grep(%r{^(spec)/})
 
     s.add_dependency 'activesupport','>= 5.2'
-    s.add_dependency 'hpricot','>= 0.8.6'
     s.add_dependency 'rexml'
     s.add_dependency 'nokogiri','>= 1.10'
 
