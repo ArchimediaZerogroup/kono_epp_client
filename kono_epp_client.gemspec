@@ -19,4 +19,6 @@ Gem::Specification.new do |s|
     s.add_dependency 'rexml'
     s.add_dependency 'nokogiri','>= 1.10'
 
-  end
+    s.add_development_dependency "rspec"
+
+end
