@@ -153,6 +153,10 @@ module KonoEppClient #:nodoc:
       send_command( domain )
     end
 
+    def check_domains( *domains )
+      send_command( KonoEppCheckDomains.new *domains )
+    end
+
     def update_domain( options )
       domain = KonoEppUpdateDomain.new options
       send_command( domain )
