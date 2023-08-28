@@ -134,6 +134,10 @@ module KonoEppClient #:nodoc:
       send_command( contact )
     end
 
+    def check_contacts
+      send_command( KonoEppCheckContacts.new )
+    end
+
     def delete_contact( id )
       contact = KonoEppDeleteContact.new id
       send_command( contact )

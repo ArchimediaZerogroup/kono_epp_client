@@ -47,6 +47,7 @@ module KonoEppClient::Transport
     end
 
     def close
+      FileUtils.rm_rf(@store.path)
     end
 
   private
