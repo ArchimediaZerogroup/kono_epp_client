@@ -1,22 +1,21 @@
 class KonoEppUpdateDomain < KonoEppCommand
-  def initialize( options )
-    super( nil, nil )
+  def initialize(options)
+    super(nil, nil)
 
     command = root.elements['command']
-    update = command.add_element( "update" )
+    update = command.add_element("update")
 
-
-    domain_update = update.add_element( "domain:update", { "xmlns:domain" => "urn:ietf:params:xml:ns:domain-1.0",
-                                                           "xsi:schemaLocation" => "urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd" } )
+    domain_update = update.add_element("domain:update", {"xmlns:domain" => "urn:ietf:params:xml:ns:domain-1.0",
+                                                         "xsi:schemaLocation" => "urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd"})
 
     name = domain_update.add_element "domain:name"
     name.text = options[:name]
 
-    if not options[:add_nameservers].blank? or options[:add_admin] or options[:add_tech]
+    if not options[:add_nameservers].blank? or options[:add_admin] or options[:add_tech] or options[:add_status]
       domain_add = domain_update.add_element "domain:add"
     end
 
-    if not options[:remove_nameservers].blank? or options[:remove_admin] or options[:remove_tech]
+    if not options[:remove_nameservers].blank? or options[:remove_admin] or options[:remove_tech] or options[:remove_status]
       domain_remove = domain_update.add_element "domain:rem"
     end
 
@@ -31,18 +30,22 @@ class KonoEppUpdateDomain < KonoEppCommand
         host_name.text = ns[0]
 
         # FIXME IPv6
-        host_addr = host_attr.add_element "domain:hostAddr", { "ip" => "v4" }
+        host_addr = host_attr.add_element "domain:hostAddr", {"ip" => "v4"}
         host_addr.text = ns[1]
       end
     end
 
     if options[:add_admin]
-      domain_contact = domain_add.add_element "domain:contact", { "type" => "admin" }
+      domain_contact = domain_add.add_element "domain:contact", {"type" => "admin"}
       domain_contact.text = options[:add_admin]
     end
 
+    if options[:add_status]
+       domain_add.add_element "domain:status", {"s" => options[:add_status]}
+    end
+
     if options[:add_tech]
-      domain_contact = domain_add.add_element "domain:contact", { "type" => "tech" }
+      domain_contact = domain_add.add_element "domain:contact", {"type" => "tech"}
       domain_contact.text = options[:add_tech]
     end
 
@@ -59,12 +62,16 @@ class KonoEppUpdateDomain < KonoEppCommand
     end
 
     if options[:remove_admin]
-      domain_contact = domain_remove.add_element "domain:contact", { "type" => "admin" }
+      domain_contact = domain_remove.add_element "domain:contact", {"type" => "admin"}
       domain_contact.text = options[:remove_admin]
     end
 
+    if options[:remove_status]
+      domain_remove.add_element "domain:status", {"s" => options[:remove_status]}
+    end
+
     if options[:remove_tech]
-      domain_contact = domain_remove.add_element "domain:contact", { "type" => "tech" }
+      domain_contact = domain_remove.add_element "domain:contact", {"type" => "tech"}
       domain_contact.text = options[:remove_tech]
     end
 

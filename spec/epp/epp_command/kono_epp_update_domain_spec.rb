@@ -64,6 +64,18 @@ RSpec.describe KonoEppUpdateDomain do
       expect(rendered.to_s.downcase).to have_tag("update>rem>contact", with: {type: "tech"}, text: options[:remove_tech].downcase)
     end
   end
+  context "update status", snapshot: 'xml' do
+    let(:options) {
+      super().merge({
+                      add_status: "clientTransferProhibited",
+                      remove_status: "clientHold",
+                    })
+    }
+    it "cambia status", snapshot: 'xml' do
+      expect(rendered.to_s.downcase).to have_tag("update>add>status", with: {s: options[:add_status].downcase})
+      expect(rendered.to_s.downcase).to have_tag("update>rem>status", with: {s: options[:remove_status].downcase})
+    end
+  end
 
   context "update auth_info" do
     let(:options) {
@@ -71,7 +83,7 @@ RSpec.describe KonoEppUpdateDomain do
                       auth_info: "AUTH12-!DSRTG"
                     })
     }
-    it "cambia AUTH_INFO",snapshot: "xml" do
+    it "cambia AUTH_INFO", snapshot: "xml" do
       expect(rendered.to_s.downcase).to have_tag("update>chg") do
         with_tag("authinfo>pw", text: options[:auth_info].downcase)
         without_tag("registrant")
@@ -84,7 +96,7 @@ RSpec.describe KonoEppUpdateDomain do
                         registrant: "R0001"
                       })
       }
-      it "cambia REGISTRANT",snapshot: "xml" do
+      it "cambia REGISTRANT", snapshot: "xml" do
         expect(rendered.to_s.downcase).to have_tag("update>chg>registrant", text: options[:registrant].downcase)
       end
     end
