@@ -22,6 +22,11 @@ module KonoEppClient #:nodoc:
     # * <tt>:services</tt> - Use custom EPP services in the <login> frame. The defaults use the EPP standard domain, contact and host 1.0 services.
     # * <tt>:extensions</tt> - URLs to custom extensions to standard EPP. Use these to extend the standard EPP (e.g., Nominet uses extensions). Defaults to none.
     # * <tt>:version</tt> - Set the EPP version. Defaults to "1.0".
+    # * <tt>:transport</tt> - Type of connection (http or tcp). Default to "tcp"
+    # * <tt>:timeout</tt> - Timeou for connections in seconds. Default to "30"
+    # * <tt>:ssl_version</tt> - Version of the ssl protocol versione. Default to TLSv1
+    # * <tt>:ssl_version</tt> - Version of the ssl protocol versione. Default to TLSv1
+    #
     def initialize(attributes = {})
       requires!(attributes, :tag, :password, :server)
 
@@ -242,14 +247,21 @@ module KonoEppClient #:nodoc:
 		# the EPP <tt><greeting></tt> which is sent by the
 		# server upon connection.
     def open_connection
+      # FIXME il timeout serve solamente nella versione tcp
+      # FIXME perchè utilizzare un'istanza di classe? non sarebbe meglio avere un metodo che genera il transport
+      #       e successivamente viene utilizzato sempre quello?
       Timeout.timeout @timeout do
-        @connection = case @transport
-          when :tcp then KonoEppClient::Transport::TcpTransport.new( server, port )
-          when :http then KonoEppClient::Transport::HttpTransport.new( server, port, ssl_version: ssl_version)
+        case @transport
+        when :tcp
+          @connection = KonoEppClient::Transport::TcpTransport.new(server, port)
+        when :http
+          @connection = KonoEppClient::Transport::HttpTransport.new(server, port,
+                                                                    ssl_version: ssl_version,
+                                                                    cookie_file: "#{@tag.downcase}.cookies.pstore"
+          )
         end
       end
     end
-
 
     # Receive an EPP response from the server. Since the connection is blocking,
     # this method will wait until the connection becomes available for use. If
