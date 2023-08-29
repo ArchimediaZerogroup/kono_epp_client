@@ -25,8 +25,10 @@ class KonoEppUpdateDomain < KonoEppCommand
           host_name.text = ns[0]
 
           # FIXME IPv6
-          host_addr = host_attr.add_element "domain:hostAddr", {"ip" => "v4"}
-          host_addr.text = ns[1]
+          if ns[1]
+            host_addr = host_attr.add_element "domain:hostAddr", {"ip" => "v4"}
+            host_addr.text = ns[1]
+          end
         end
       end
 

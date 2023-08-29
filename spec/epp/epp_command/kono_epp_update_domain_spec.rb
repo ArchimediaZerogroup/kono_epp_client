@@ -29,7 +29,10 @@ RSpec.describe KonoEppUpdateDomain do
   context "update nameservers" do
     let(:options) {
       super().merge({
-                      add_nameservers: [['ns1.example.com', '192.168.1.1']],
+                      add_nameservers: [
+                        ['ns1.example.com', '192.168.1.1'],
+                        ['ns3.example.com']
+                      ],
                       remove_nameservers: ['ns2.example.com'],
                     })
     }
@@ -38,6 +41,12 @@ RSpec.describe KonoEppUpdateDomain do
         with_tag("hostattr") do
           with_tag("hostname", text: 'ns1.example.com')
           with_tag("hostaddr", text: '192.168.1.1')
+        end
+      end
+      expect(rendered.to_s.downcase).to have_tag("update>add>ns") do
+        with_tag("hostattr") do
+          with_tag("hostname", text: 'ns3.example.com')
+          without_tag("hostaddr",text:"")
         end
       end
       expect(rendered.to_s.downcase).to have_tag("update>rem>ns") do

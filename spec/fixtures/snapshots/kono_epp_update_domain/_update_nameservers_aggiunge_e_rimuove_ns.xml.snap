@@ -10,6 +10,9 @@
               <domain:hostName>ns1.example.com</domain:hostName>
               <domain:hostAddr ip="v4">192.168.1.1</domain:hostAddr>
             </domain:hostAttr>
+            <domain:hostAttr>
+              <domain:hostName>ns3.example.com</domain:hostName>
+            </domain:hostAttr>
           </domain:ns>
         </domain:add>
         <domain:rem>
