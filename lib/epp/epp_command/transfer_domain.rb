@@ -4,6 +4,7 @@ class KonoEppTransferDomain < KonoEppCommand
 
     command = root.elements['command']
     transfer = command.add_element( "transfer", { "op" => op } )
+    # FIXME dovremmo controllare che le possibili opzioni di OP sono  'request', 'cancel', 'approve', 'reject', 'query'
 
     domain_transfer = transfer.add_element( "domain:transfer", { "xmlns:domain" => "urn:ietf:params:xml:ns:domain-1.0",
                                             "xsi:schemaLocation" => "urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd" } )

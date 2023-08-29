@@ -245,6 +245,8 @@ module KonoEppClient #:nodoc:
           raise KonoEppAuthenticationPasswordExpired.new( args )
         when [2002, 4015]
           raise KonoEppLoginNeeded.new( args )
+        when [2304, 9022]
+          raise KonoEppDomainHasStatusCliTransProhibited.new(args)
         else
           raise KonoEppErrorResponse.new( args )
       end

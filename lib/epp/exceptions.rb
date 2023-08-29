@@ -16,3 +16,8 @@ end
 
 class KonoEppAuthenticationPasswordExpired < KonoEppErrorResponse ; end
 class KonoEppLoginNeeded < KonoEppErrorResponse ; end
+
+##
+# Errore NIC:
+# (2304=Object status prohibits operation 9022=Domain has status clientTransferProhibited)
+class KonoEppDomainHasStatusCliTransProhibited < KonoEppErrorResponse; end
