@@ -177,9 +177,8 @@ module KonoEppClient #:nodoc:
       send_command( info )
     end
 
-    def transfer_domain( name, authinfo, op )
-      transfer = KonoEppTransferDomain.new name, authinfo, op
-      send_command( transfer )
+    def transfer_domain(name, authinfo, op, extension: nil)
+      send_command(KonoEppTransferDomain.new( name, authinfo, op, extension: extension))
     end
 
     # Sends a standard logout request to the EPP server.
