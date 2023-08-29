@@ -52,11 +52,11 @@ class KonoEppUpdateDomain < KonoEppCommand
       unless options[:remove_nameservers].blank?
         domain_remove_ns = domain_remove.add_element "domain:ns"
 
-        options[:remove_nameservers].each do |name|
+        options[:remove_nameservers].each do |ns_name|
           host_attr = domain_remove_ns.add_element "domain:hostAttr"
           host_name = host_attr.add_element "domain:hostName"
 
-          host_name.text = name
+          host_name.text = ns_name
         end
       end
 
