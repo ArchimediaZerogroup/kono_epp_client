@@ -5,7 +5,7 @@ module KonoEppClient #:nodoc:
 
     require 'nokogiri'
 
-    attr_accessor :tag, :password, :server, :port, :old_server, :services, :lang, :extensions, :version, :credit, :timeout
+    attr_accessor :tag, :password, :server, :port, :ssl_version, :old_server, :services, :lang, :extensions, :version, :credit, :timeout
 
     # ==== Required Attrbiutes
     #
@@ -22,20 +22,26 @@ module KonoEppClient #:nodoc:
     # * <tt>:services</tt> - Use custom EPP services in the <login> frame. The defaults use the EPP standard domain, contact and host 1.0 services.
     # * <tt>:extensions</tt> - URLs to custom extensions to standard EPP. Use these to extend the standard EPP (e.g., Nominet uses extensions). Defaults to none.
     # * <tt>:version</tt> - Set the EPP version. Defaults to "1.0".
+    # * <tt>:transport</tt> - Type of connection (http or tcp). Default to "tcp"
+    # * <tt>:timeout</tt> - Timeou for connections in seconds. Default to "30"
+    # * <tt>:ssl_version</tt> - Version of the ssl protocol versione. Default to TLSv1
+    # * <tt>:ssl_version</tt> - Version of the ssl protocol versione. Default to TLSv1
+    #
     def initialize(attributes = {})
       requires!(attributes, :tag, :password, :server)
 
-      @tag        = attributes[:tag]
-      @password   = attributes[:password]
-      @server     = attributes[:server]
-      @port       = attributes[:port]       || 700
-      @old_server = attributes[:old_server] || false
-      @lang       = attributes[:lang]       || "en"
-      @services   = attributes[:services]   || ["urn:ietf:params:xml:ns:domain-1.0", "urn:ietf:params:xml:ns:contact-1.0", "urn:ietf:params:xml:ns:host-1.0"]
-      @extensions = attributes[:extensions] || []
-      @version    = attributes[:version]    || "1.0"
-      @transport  = attributes[:transport]  || :tcp
-      @timeout    = attributes[:timeout]    || 30
+      @tag          = attributes[:tag]
+      @password     = attributes[:password]
+      @server       = attributes[:server]
+      @port         = attributes[:port]        || 700
+      @old_server   = attributes[:old_server]  || false
+      @lang         = attributes[:lang]        || "en"
+      @services     = attributes[:services]    || ["urn:ietf:params:xml:ns:domain-1.0", "urn:ietf:params:xml:ns:contact-1.0", "urn:ietf:params:xml:ns:host-1.0"]
+      @extensions   = attributes[:extensions]  || []
+      @version      = attributes[:version]     || "1.0"
+      @transport    = attributes[:transport]   || :tcp
+      @timeout      = attributes[:timeout]     || 30
+      @ssl_version  = attributes[:ssl_version] || :TLSv1
 
       @logged_in  = false
     end
@@ -112,7 +118,7 @@ module KonoEppClient #:nodoc:
 
     # FIXME: Remove command wrappers?
     def hello
-      response = Hpricot.XML( send_request( KonoEppHello.new.to_s ) )
+      send_request( KonoEppHello.new.to_s )
     end
 
     def poll( id = nil )
@@ -128,6 +134,10 @@ module KonoEppClient #:nodoc:
       send_command( contact )
     end
 
+    def check_contacts(ids)
+      send_command( KonoEppCheckContacts.new(ids) )
+    end
+
     def delete_contact( id )
       contact = KonoEppDeleteContact.new id
       send_command( contact )
@@ -141,6 +151,10 @@ module KonoEppClient #:nodoc:
     def create_domain( options )
       domain = KonoEppCreateDomain.new options
       send_command( domain )
+    end
+
+    def check_domains( *domains )
+      send_command( KonoEppCheckDomains.new *domains )
     end
 
     def update_domain( options )
@@ -163,9 +177,8 @@ module KonoEppClient #:nodoc:
       send_command( info )
     end
 
-    def transfer_domain( name, authinfo, op )
-      transfer = KonoEppTransferDomain.new name, authinfo, op
-      send_command( transfer )
+    def transfer_domain(name, authinfo, op, extension: nil)
+      send_command(KonoEppTransferDomain.new( name, authinfo, op, extension: extension))
     end
 
     # Sends a standard logout request to the EPP server.
@@ -231,6 +244,10 @@ module KonoEppClient #:nodoc:
           raise KonoEppAuthenticationPasswordExpired.new( args )
         when [2002, 4015]
           raise KonoEppLoginNeeded.new( args )
+        when [2304, 9022]
+          raise KonoEppDomainHasStatusCliTransProhibited.new(args)
+        when [2304, 9026]
+          raise KonoEppDomainHasStatusClientUpdateProhibited.new(args)
         else
           raise KonoEppErrorResponse.new( args )
       end
@@ -241,14 +258,21 @@ module KonoEppClient #:nodoc:
 		# the EPP <tt><greeting></tt> which is sent by the
 		# server upon connection.
     def open_connection
+      # FIXME il timeout serve solamente nella versione tcp
+      # FIXME perchè utilizzare un'istanza di classe? non sarebbe meglio avere un metodo che genera il transport
+      #       e successivamente viene utilizzato sempre quello?
       Timeout.timeout @timeout do
-        @connection = case @transport
-          when :tcp then KonoEppClient::Transport::TcpTransport.new( server, port )
-          when :http then KonoEppClient::Transport::HttpTransport.new( server, port )
+        case @transport
+        when :tcp
+          @connection = KonoEppClient::Transport::TcpTransport.new(server, port)
+        when :http
+          @connection = KonoEppClient::Transport::HttpTransport.new(server, port,
+                                                                    ssl_version: ssl_version,
+                                                                    cookie_file: "#{@tag.downcase}.cookies.pstore"
+          )
         end
       end
     end
-
 
     # Receive an EPP response from the server. Since the connection is blocking,
     # this method will wait until the connection becomes available for use. If

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<epp xmlns="urn:ietf:params:xml:ns:epp-1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:ietf:params:xml:ns:epp-1.0 epp-1.0.xsd">
+  <command>
+    <transfer op="request">
+      <domain:transfer xmlns:domain="urn:ietf:params:xml:ns:domain-1.0" xsi:schemaLocation="urn:ietf:params:xml:ns:domain-1.0 domain-1.0.xsd">
+        <domain:name>test.it</domain:name>
+        <domain:authInfo>
+          <domain:pw>wee-12-sd</domain:pw>
+        </domain:authInfo>
+      </domain:transfer>
+    </transfer>
+    <extension>
+      <extdom:trade xmlns:extdom="http://www.nic.it/ITNIC-EPP/extdom-2.0" xsi:schemaLocation="http://www.nic.it/ITNIC-EPP/extdom-2.0 extdom-2.0.xsd">
+        <extdom:transferTrade>
+          <extdom:newRegistrant>xx123fd</extdom:newRegistrant>
+          <extdom:newAuthInfo>
+            <extdom:pw>abc-sd934-sd</extdom:pw>
+          </extdom:newAuthInfo>
+        </extdom:transferTrade>
+      </extdom:trade>
+    </extension>
+  </command>
+</epp>

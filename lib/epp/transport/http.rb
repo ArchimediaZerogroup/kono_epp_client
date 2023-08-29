@@ -6,20 +6,24 @@ module KonoEppClient::Transport
 
     require 'pstore'
 
-    def initialize( server, port )
+    # @param [String] server
+    # @param [Integer] port
+    # @param [Symbol] ssl_version -> Versione ssl
+    # @param [String] cookie_file -> identifica il nome del file del cookie-store
+    def initialize(server, port, ssl_version: :TLSv1, cookie_file: "cookies.pstore")
       @net_http = Net::HTTP.new( server, port )
 
       @net_http.use_ssl = true
-      @net_http.ssl_version = :TLSv1
+      @net_http.ssl_version = ssl_version
       @net_http.verify_mode = OpenSSL::SSL::VERIFY_PEER
-      
+
       #FIXME: Commented because not work on MacOS (dev machine), is necessary for Linux machine?
       #@net_http.ca_path = '/etc/ssl/certs' 
-      
+
       # @net_http.set_debug_output $stderr
        #@net_http.set_debug_output File.open( "/tmp/net.log", "a")
 
-      @store = PStore.new( "cookies.pstore" )
+      @store = PStore.new( cookie_file )
     end
 
     def read
@@ -43,6 +47,7 @@ module KonoEppClient::Transport
     end
 
     def close
+      FileUtils.rm_rf(@store.path)
     end
 
   private
