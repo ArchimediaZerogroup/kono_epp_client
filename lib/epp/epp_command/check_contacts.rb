@@ -1,5 +1,5 @@
 class KonoEppCheckContacts < KonoEppCommand
-  def initialize
+  def initialize(ids)
     super(nil, nil)
 
     command = root.elements['command']
@@ -8,10 +8,7 @@ class KonoEppCheckContacts < KonoEppCommand
 
     contact_check = info.add_element("contact:check", {"xmlns:contact" => "urn:ietf:params:xml:ns:contact-1.0"})
 
-    ["mm001",
-     "mb001",
-     "cl001",
-     "bb001"].each do |t|
+    ids.each do |t|
       contact_id = contact_check.add_element "contact:id"
       contact_id.text = t
     end
