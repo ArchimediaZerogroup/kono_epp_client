@@ -92,6 +92,13 @@ class KonoEppUpdateDomain < KonoEppCommand
       domain_pw.text = options[:auth_info]
     end
 
+    if options[:restore]
+      command.add_element("extension").tap do |ext|
+        ext.add_element("rgp:update", {"xmlns:rgp"=>"urn:ietf:params:xml:ns:rgp-1.0",
+                        "xsi:schemaLocation"=>"urn:ietf:params:xml:ns:rgp-1.0 rgp-1.0.xsd"}).
+          add_element("rgp:restore", {"op"=> "request"})
+      end
+    end
     # TODO: Registrant
   end
 end

@@ -73,7 +73,7 @@ RSpec.describe KonoEppUpdateDomain do
       expect(rendered.to_s.downcase).to have_tag("update>rem>contact", with: {type: "tech"}, text: options[:remove_tech].downcase)
     end
   end
-  context "update status", snapshot: 'xml' do
+  context "update status" do
     let(:options) {
       super().merge({
                       add_status: "clientTransferProhibited",
@@ -83,6 +83,17 @@ RSpec.describe KonoEppUpdateDomain do
     it "cambia status", snapshot: 'xml' do
       expect(rendered.to_s.downcase).to have_tag("update>add>status", with: {s: options[:add_status].downcase})
       expect(rendered.to_s.downcase).to have_tag("update>rem>status", with: {s: options[:remove_status].downcase})
+    end
+  end
+
+  context "restore" do
+    let(:options) {
+      super().merge({
+                      restore: true
+                    })
+    }
+    it "esiste l'estensione di restore",snapshot: 'xml' do
+      expect(rendered.to_s.downcase).to have_tag("extension>update>restore", with: {op: "request"})
     end
   end
 

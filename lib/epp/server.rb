@@ -246,6 +246,8 @@ module KonoEppClient #:nodoc:
           raise KonoEppLoginNeeded.new( args )
         when [2304, 9022]
           raise KonoEppDomainHasStatusCliTransProhibited.new(args)
+        when [2304, 9026]
+          raise KonoEppDomainHasStatusClientUpdateProhibited.new(args)
         else
           raise KonoEppErrorResponse.new( args )
       end
