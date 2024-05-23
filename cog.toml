@@ -1,0 +1,32 @@
+docker-compose.ymlfrom_latest_tag = false
+ignore_merge_commits = false
+disable_changelog = false
+generate_mono_repository_global_tag = true
+branch_whitelist = []
+skip_ci = "[skip ci]"
+skip_untracked = false
+pre_bump_hooks = [
+    "echo '{{version}}' > lib/kono_epp_client/VERSION",
+    "docker compose run app bundle"
+]
+post_bump_hooks = [
+    "git push",
+    "git push origin {{version}}",
+    "docker compose run app gem build kono_epp_client.gemspec",
+    "docker compose run app gem push kono_epp_client-{{version}}.gem",
+    "rm -fr kono_epp_client-{{version}}.gem"
+]
+pre_package_bump_hooks = []
+post_package_bump_hooks = []
+
+[git_hooks]
+
+[commit_types]
+
+[changelog]
+path = "CHANGELOG.md"
+authors = []
+
+[bump_profiles]
+
+[packages]
