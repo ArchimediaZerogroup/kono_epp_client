@@ -9,7 +9,7 @@ RSpec.configure do |config|
     extension = ".#{example.metadata[:snapshot]}" unless example.metadata[:snapshot] === true
     class_name = example.metadata[:described_class].name.underscore
     test_name = example.metadata[:full_description].gsub(example.metadata[:described_class].name, "").tr(" ", "_")
-    raise "component snapshot has no content" if raw_rendered_content.blank?
+    raise "component snapshot has no content" if raw_rendered_content.nil? or raw_rendered_content.empty?
     str_content = raw_rendered_content
     if extension == ".xml"
       str_content = Nokogiri.XML(str_content).to_xml
