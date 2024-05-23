@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
     s.add_dependency 'nokogiri','>= 1.10'
 
     s.add_development_dependency "rspec"
+    s.add_development_dependency "super_diff"
     s.add_development_dependency "rspec-html-matchers"
     s.add_development_dependency 'rspec-snapshot'
 
