@@ -30,6 +30,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'activesupport', '>= 5.2'
   s.add_dependency 'rexml'
   s.add_dependency 'nokogiri', '>= 1.10'
+  s.add_dependency 'zeitwerk'
 
   s.add_development_dependency "rspec"
   s.add_development_dependency "super_diff"

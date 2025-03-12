@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe KonoEppUpdateDomain do
+RSpec.describe KonoEppClient::Commands::UpdateDomain do
 
   let(:options) do
     {
@@ -19,7 +19,7 @@ RSpec.describe KonoEppUpdateDomain do
   include_context "like epp command"
 
   let(:instance) {
-    KonoEppUpdateDomain.new(options)
+    KonoEppClient::Commands::UpdateDomain.new(options)
   }
 
   it "contiene il nome del dominio" do

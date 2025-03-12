@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe KonoEppTransferDomain do
+RSpec.describe KonoEppClient::Commands::TransferDomain do
 
   include_context "like epp command"
 

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
+module KonoEppClient::Commands
 
-class KonoEppCheckDomains < KonoEppCommand
+class CheckDomains < Command
   def initialize( *domains )
     super( nil, nil )
 
@@ -15,4 +16,5 @@ class KonoEppCheckDomains < KonoEppCommand
       domain_name.text = d
     end
   end
+end
 end

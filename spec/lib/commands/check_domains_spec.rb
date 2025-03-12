@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-RSpec.describe KonoEppCheckDomains do
+RSpec.describe KonoEppClient::Commands::CheckDomains do
   include_context "like epp command"
 
   let(:instance) do
