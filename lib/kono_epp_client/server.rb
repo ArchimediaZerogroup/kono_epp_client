@@ -83,7 +83,7 @@ module KonoEppClient #:nodoc:
 
     # Sends a standard login request to the EPP server.
     def login
-      login = KonoEppLogin.new(tag, password)
+      login = Commands::Login.new(tag, password)
 
       # FIXME: Order matters
       login.version = version
@@ -96,7 +96,7 @@ module KonoEppClient #:nodoc:
     end
 
     def change_password(new_password)
-      login = KonoEppLogin.new(tag, password)
+      login = Commands::Login.new(tag, password)
 
       # FIXME: Order matters
       login.new_password = new_password
@@ -122,11 +122,11 @@ module KonoEppClient #:nodoc:
 
     # FIXME: Remove command wrappers?
     def hello
-      send_request(KonoEppHello.new.to_s)
+      send_request(Commands::Hello.new.to_s)
     end
 
     def poll(id = nil)
-      poll = KonoEppPoll.new(id ? :ack : :req)
+      poll = Commands::Poll.new(id ? :ack : :req)
 
       poll.ack_id = id if id
 
@@ -134,60 +134,60 @@ module KonoEppClient #:nodoc:
     end
 
     def create_contact(options)
-      contact = KonoEppCreateContact.new options
+      contact = Commands::CreateContact.new options
       send_command(contact)
     end
 
     def check_contacts(ids)
-      send_command(KonoEppCheckContacts.new(ids))
+      send_command(Commands::CheckContacts.new(ids))
     end
 
     def delete_contact(id)
-      contact = KonoEppDeleteContact.new id
+      contact = Commands::DeleteContact.new id
       send_command(contact)
     end
 
     def update_contact(options)
-      contact = KonoEppUpdateContact.new options
+      contact = Commands::UpdateContact.new options
       send_command(contact)
     end
 
     def create_domain(options)
-      domain = KonoEppCreateDomain.new options
+      domain = Commands::CreateDomain.new options
       send_command(domain)
     end
 
     def check_domains(*domains)
-      send_command(KonoEppCheckDomains.new *domains)
+      send_command(Commands::CheckDomains.new *domains)
     end
 
     def update_domain(options)
-      domain = KonoEppUpdateDomain.new options
+      domain = Commands::UpdateDomain.new options
       send_command(domain)
     end
 
     def delete_domain(name)
-      domain = KonoEppDeleteDomain.new name
+      domain = Commands::DeleteDomain.new name
       send_command(domain)
     end
 
     def info_contact(id)
-      contact = KonoEppInfoContact.new id
+      contact = Commands::InfoContact.new id
       send_command(contact)
     end
 
     def info_domain(name)
-      info = KonoEppInfoDomain.new name
+      info = Commands::InfoDomain.new name
       send_command(info)
     end
 
     def transfer_domain(name, authinfo, op, extension: nil)
-      send_command(KonoEppTransferDomain.new(name, authinfo, op, extension: extension))
+      send_command(Commands::TransferDomain.new(name, authinfo, op, extension: extension))
     end
 
     # Sends a standard logout request to the EPP server.
     def logout
-      send_command(KonoEppLogout.new, 1500)
+      send_command(Commands::Logout.new, 1500)
     end
 
     # private
@@ -207,16 +207,16 @@ module KonoEppClient #:nodoc:
       # TODO: multiple <response> RFC 3730 §2.6
       result = xml.at_xpath("/xmlns:epp/xmlns:response[1]/xmlns:result",
                             namespaces)
-      raise KonoEppErrorResponse.new(:message => 'Malformed response') if result.nil?
+      raise Exceptions::ErrorResponse.new(:message => 'Malformed response') if result.nil?
 
       xmlns_code = result.at_xpath("@code")
-      raise KonoEppErrorResponse.new(:message => 'Malformed response') if xmlns_code.nil?
+      raise Exceptions::ErrorResponse.new(:message => 'Malformed response') if xmlns_code.nil?
 
       response_code = xmlns_code.value.to_i
 
       xmlns_msg = result.xpath("xmlns:msg/text ()",
                                namespaces)
-      raise KonoEppErrorResponse.new(:message => 'Malformed response') if xmlns_msg.empty?
+      raise Exceptions::ErrorResponse.new(:message => 'Malformed response') if xmlns_msg.empty?
 
       result_message = xmlns_msg.text.strip
 
@@ -245,15 +245,15 @@ module KonoEppClient #:nodoc:
 
       case [response_code, reason_code]
       when [2200, 6004]
-        raise KonoEppAuthenticationPasswordExpired.new(args)
+        raise Exceptions::AuthenticationPasswordExpired.new(args)
       when [2002, 4015]
-        raise KonoEppLoginNeeded.new(args)
+        raise Exceptions::LoginNeeded.new(args)
       when [2304, 9022]
-        raise KonoEppDomainHasStatusCliTransProhibited.new(args)
+        raise Exceptions::DomainHasStatusCliTransProhibited.new(args)
       when [2304, 9026]
-        raise KonoEppDomainHasStatusClientUpdateProhibited.new(args)
+        raise Exceptions::DomainHasStatusClientUpdateProhibited.new(args)
       else
-        raise KonoEppErrorResponse.new(args)
+        raise Exceptions::ErrorResponse.new(args)
       end
     end
 
