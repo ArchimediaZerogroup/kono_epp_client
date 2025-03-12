@@ -8,9 +8,9 @@ Gem::Specification.new do |s|
   s.description = "A simple EPP Client"
   s.authors = ["Fabio Bonelli", "Jury Ghidinelli", "Marino Bonetti"]
   s.email = ['jury@archimedianet.it', 'marinobonetti@gmail.com']
-  s.files = ["lib/kono_epp_client.rb"]
   s.homepage = 'https://github.com/ArchimediaZerogroup/kono_epp_client'
   s.license = 'MIT'
+  spec.required_ruby_version = ">= 2.7"
 
   s.files = Dir.chdir(__dir__) do
     `git ls-files -z`.split("\x0").reject do |f|
