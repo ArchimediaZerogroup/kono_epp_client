@@ -2,7 +2,7 @@
 require 'rubygems'
 require 'openssl'
 require 'socket'
-require 'active_support'
+require 'active_support/all'
 require 'rexml/document'
 
 require "zeitwerk"
