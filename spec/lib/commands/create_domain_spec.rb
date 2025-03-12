@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
-RSpec.describe KonoEppCreateDomain do
+RSpec.describe KonoEppClient::Commands::CreateDomain do
   include_context "like epp command"
 
   let(:instance) {
-    KonoEppCreateDomain.new(
+    KonoEppClient::Commands::CreateDomain.new(
       {name: 'architest.it',
        period: 1,
        nameservers:

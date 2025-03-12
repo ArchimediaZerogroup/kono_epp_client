@@ -8,9 +8,9 @@ Gem::Specification.new do |s|
   s.description = "A simple EPP Client"
   s.authors = ["Fabio Bonelli", "Jury Ghidinelli", "Marino Bonetti"]
   s.email = ['jury@archimedianet.it', 'marinobonetti@gmail.com']
-  s.files = ["lib/kono_epp_client.rb"]
   s.homepage = 'https://github.com/ArchimediaZerogroup/kono_epp_client'
   s.license = 'MIT'
+  s.required_ruby_version = ">= 2.7"
 
   s.files = Dir.chdir(__dir__) do
     `git ls-files -z`.split("\x0").reject do |f|
@@ -30,6 +30,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'activesupport', '>= 5.2'
   s.add_dependency 'rexml'
   s.add_dependency 'nokogiri', '>= 1.10'
+  s.add_dependency 'zeitwerk'
 
   s.add_development_dependency "rspec"
   s.add_development_dependency "super_diff"

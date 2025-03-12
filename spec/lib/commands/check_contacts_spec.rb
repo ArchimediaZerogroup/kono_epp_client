@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-RSpec.describe KonoEppCheckContacts do
+RSpec.describe KonoEppClient::Commands::CheckContacts do
 
   let(:ids){
     ["mm001",
