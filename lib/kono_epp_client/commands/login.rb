@@ -20,6 +20,7 @@ module KonoEppClient::Commands
     end
 
     def version
+      return nil unless @options
       version = @options.elements['version']
 
       version.text if version
@@ -33,9 +34,10 @@ module KonoEppClient::Commands
     end
 
     def lang
+      return nil unless @options
       lang = @options.elements['lang']
 
-      lang.text if version
+      lang.text if lang
     end
 
     def new_password=(value)
@@ -71,11 +73,12 @@ module KonoEppClient::Commands
     end
 
     def extensions
-      svc_extension = @login.elements['svcs/svcExtension']
+      svcs_extension = @login.elements['svcs/svcExtension']
 
-      svc_extension.elements.each("extURI") { |obj| res << obj.text } if svcs_extension
+      res = []
+      svcs_extension.elements.each("extURI") { |obj| res << obj.text } if svcs_extension
 
-      return res
+      res
     end
   end
 end
