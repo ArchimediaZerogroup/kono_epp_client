@@ -3,7 +3,7 @@ Bundler.setup
 
 require 'simplecov'
 SimpleCov.start do
-  add_group "Commands","lib/epp/epp_command"
+  add_group "Commands","lib/kono_epp_client/commands"
 end
 require 'debug'
 require 'kono_epp_client' # and any other gems you need
