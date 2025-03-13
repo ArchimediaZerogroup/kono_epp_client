@@ -66,4 +66,42 @@ RSpec.describe KonoEppClient::Server do
 
   end
 
+  describe "#login" do
+
+    it {
+      expect(instance).to receive(:send_command) do |command|
+        expect(command.to_s).to have_tag("command>login") do
+          with_tag("options>version", text: "1.0")
+          with_tag("options>lang", text: "en")
+          instance.services.each do |srv|
+            with_tag("svcs>objuri", text: srv)
+          end
+          without_tag("svcs>svcextension")
+        end
+      end
+
+      instance.login
+    }
+
+    context "with extensions" do
+      let(:params) {
+        super().merge(extensions: ["https://nome.estensione", "altra:estensione"])
+      }
+
+      it {
+        expect(instance).to receive(:send_command) do |command|
+          expect(command.to_s).to have_tag("command>login>svcs>svcextension") do
+            with_tag("exturi", text: "https://nome.estensione")
+            with_tag("exturi", text: "altra:estensione")
+          end
+        end
+
+        instance.login
+
+      }
+
+    end
+
+  end
+
 end
