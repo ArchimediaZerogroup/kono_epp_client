@@ -155,6 +155,10 @@ module KonoEppClient #:nodoc:
     end
 
     def create_domain(options)
+      dns_sec_data = options.delete(:dns_sec_data)||[]
+      if dns_sec_enabled?
+        options[:dns_sec_data] = dns_sec_data
+      end
       domain = Commands::CreateDomain.new options
       send_command(domain)
     end
