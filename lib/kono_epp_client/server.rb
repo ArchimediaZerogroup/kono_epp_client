@@ -9,6 +9,8 @@ module KonoEppClient #:nodoc:
                   :services, :lang, :extensions, :version, :credit, :timeout,
                   :transport, :transport_options
 
+    attr_reader :dns_sec_enabled
+
     # ==== Required Attrbiutes
     #
     # * <tt>:server</tt> - The EPP server to connect to
@@ -46,6 +48,7 @@ module KonoEppClient #:nodoc:
       @ssl_version = attributes[:ssl_version] || :TLSv1
 
       @logged_in = false
+      @dns_sec_enabled = false
     end
 
     def connect_and_hello

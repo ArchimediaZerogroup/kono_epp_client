@@ -10,6 +10,12 @@ RSpec.describe KonoEppClient::Server do
 
   let(:instance) { described_class.new(params) }
 
+  shared_context "dnssec activation" do
+    let(:params) {
+      super().merge(enableDNSSec: true)
+    }
+  end
+
   describe "initialization" do
 
     it "base" do
@@ -26,6 +32,19 @@ RSpec.describe KonoEppClient::Server do
                             ssl_version: :TLSv1
                           )
     end
+
+    it_behaves_like "dnssec activation" do
+
+      it { expect(instance).to have_attributes(
+                                 extensions: include("urn:ietf:params:xml:ns:secDNS-1.1",
+                                                     "http://www.nic.it/ITNIC-EPP/extsecDNS-1.0"),
+                                 dns_sec_enabled: false # questo viene abilitato rispetto alla risposta del NIC
+                               )
+
+      }
+
+    end
+
   end
 
   describe "#open_connection" do
@@ -105,6 +124,32 @@ RSpec.describe KonoEppClient::Server do
         instance.login
 
       }
+
+    end
+
+    it_behaves_like "dnssec activation" do
+
+      it "requested" do
+        expect(instance).to receive(:send_command) do |command|
+          expect(command.to_s).to have_tag("command>login>svcs>svcextension") do
+            with_tag("exturi", text: "http://www.nic.it/ITNIC-EPP/extsecDNS-1.0")
+            with_tag("exturi", text: "urn:ietf:params:xml:ns:secDNS-1.1")
+          end
+        end
+
+        instance.login
+
+      end
+
+      it "with response" do
+        allow(instance).to receive(:send_request)
+                             .and_return(file_fixture("login_response_for_dnssec.xml").read)
+
+        expect{
+        instance.login
+        }.to change(instance,:dns_sec_enabled).to(true)
+
+      end
 
     end
 
