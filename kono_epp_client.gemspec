@@ -36,5 +36,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "super_diff"
   s.add_development_dependency "rspec-html-matchers"
   s.add_development_dependency 'rspec-snapshot'
+  s.add_development_dependency 'debug'
 
 end
