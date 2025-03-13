@@ -3,6 +3,8 @@ Bundler.setup
 
 require 'simplecov'
 SimpleCov.start do
+  enable_coverage :branch
+  enable_coverage_for_eval
   add_group "Commands","lib/kono_epp_client/commands"
 end
 require 'debug'

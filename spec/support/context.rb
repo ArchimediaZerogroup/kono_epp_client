@@ -9,7 +9,7 @@ RSpec.shared_context "like epp command" do
   }
   let(:rendered) {
     x = Nokogiri::XML(raw_rendered_content)
-    x.remove_namespaces! # FIXME non capisco come funzioni la ricerca con namespace
+    x.remove_namespaces! # La ricerca con namespace deve essere fatta con have_xpath e il passaggio di namespace
     x
   }
 end
