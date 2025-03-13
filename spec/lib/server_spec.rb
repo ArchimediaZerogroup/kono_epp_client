@@ -104,4 +104,32 @@ RSpec.describe KonoEppClient::Server do
 
   end
 
+  describe "#create_domain" do
+
+    it {
+      expect(instance).to receive(:send_command) do |command|
+        expect(command.to_s).to have_xpath("//domain:create//domain:name[text()='architest.it']", {"domain" => "urn:ietf:params:xml:ns:domain-1.0"})
+        expect(command.to_s).not_to have_xpath("//extension//secDNS:create", {"secDNS"=>"urn:ietf:params:xml:ns:secDNS-1.1"})
+      end
+
+      instance.create_domain(name: 'architest.it', nameservers: [])
+
+    }
+
+  end
+
+  describe "#update_domain" do
+
+    it {
+      expect(instance).to receive(:send_command) do |command|
+        expect(command.to_s).to have_xpath("//domain:update//domain:name[text()='architest.it']", {"domain" => "urn:ietf:params:xml:ns:domain-1.0"})
+        expect(command.to_s).not_to have_xpath("//extension//secDNS:update", {"secDNS"=>"urn:ietf:params:xml:ns:secDNS-1.1"})
+      end
+
+      instance.update_domain(name: 'architest.it')
+
+    }
+
+  end
+
 end
