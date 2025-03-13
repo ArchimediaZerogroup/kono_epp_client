@@ -1,9 +1,11 @@
 RSpec.describe KonoEppClient::DsData do
 
+  let(:instance) {
+    KonoEppClient::DsData.new(123, :dsa_sha_1, :sha_1, "digest")
+  }
+
   it "valid instance" do
-    expect(KonoEppClient::DsData.new(
-      123, :dsa_sha_1, :sha_1, "digest")
-    ).to have_attributes(key_tag: 123, alg: 3, digest_type: 1, digest: "digest")
+    expect(instance).to have_attributes(key_tag: 123, alg: 3, digest_type: 1, digest: "digest")
   end
 
   describe "instantiate" do
@@ -32,6 +34,10 @@ RSpec.describe KonoEppClient::DsData do
     with_them do
       it { expect { KonoEppClient::DsData.new(*values) }.to raise_error(expectation) }
     end
+  end
+
+  it "#to_s" do
+    expect(instance.to_s).to match(file_fixture("example_ds_data.xml").read)
   end
 
 end

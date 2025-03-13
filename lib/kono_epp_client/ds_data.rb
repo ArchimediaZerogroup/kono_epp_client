@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 module KonoEppClient
-  class DsData
+  class DsData < REXML::Element
 
     attr_accessor :key_tag, :alg, :digest_type, :digest
 
@@ -51,6 +51,13 @@ module KonoEppClient
         raise "Invalid key tag #{key_tag}, should be 0<=key_tag<=65535"
       end
       @digest_type = DIGEST_TYPES[digest_type] || raise("Invalid digest type #{digest_type}")
+
+      super("secDNS:dsData")
+      self.add_element("secDNS:keyTag").text = @key_tag
+      self.add_element("secDNS:alg").text = @alg
+      self.add_element("secDNS:digestType").text = @digest_type
+      self.add_element("secDNS:digest").text = @digest
+
     end
 
   end
