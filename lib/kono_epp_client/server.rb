@@ -19,14 +19,13 @@ module KonoEppClient #:nodoc:
     #
     # * <tt>:port</tt> - The EPP standard port is 700. However, you can choose a different port to use.
     # * <tt>:clTRID</tt> - The client transaction identifier is an element that EPP specifies MAY be used to uniquely identify the command to the server. You are responsible for maintaining your own transaction identifier space to ensure uniqueness. Defaults to "ABC-12345"
-    # * <tt>:old_server</tt> - Set to true to read and write frames in a way that is compatible with older EPP servers. Default is false.
     # * <tt>:lang</tt> - Set custom language attribute. Default is 'en'.
     # * <tt>:services</tt> - Use custom EPP services in the <login> frame. The defaults use the EPP standard domain, contact and host 1.0 services.
     # * <tt>:extensions</tt> - URLs to custom extensions to standard EPP. Use these to extend the standard EPP (e.g., Nominet uses extensions). Defaults to none.
     # * <tt>:version</tt> - Set the EPP version. Defaults to "1.0".
-    # * <tt>:transport</tt> - Type of connection (http or tcp). Default to "tcp"
+    # * <tt>:transport</tt> - Type of connection (http). Default to "html"
     # * <tt>:transport_options</tt> - Overrides for transport configurations. Default to {}
-    # * <tt>:timeout</tt> - Timeou for connections in seconds. Default to "30"
+    # * <tt>:timeout</tt> - Timeout for connections in seconds. Default to "30"
     # * <tt>:ssl_version</tt> - Version of the ssl protocol versione. Default to TLSv1
     # * <tt>:ssl_version</tt> - Version of the ssl protocol versione. Default to TLSv1
     #
@@ -37,12 +36,11 @@ module KonoEppClient #:nodoc:
       @password = attributes[:password]
       @server = attributes[:server]
       @port = attributes[:port] || 700
-      @old_server = attributes[:old_server] || false
       @lang = attributes[:lang] || "en"
       @services = attributes[:services] || ["urn:ietf:params:xml:ns:domain-1.0", "urn:ietf:params:xml:ns:contact-1.0", "urn:ietf:params:xml:ns:host-1.0"]
       @extensions = attributes[:extensions] || []
       @version = attributes[:version] || "1.0"
-      @transport = attributes[:transport] || :tcp
+      @transport = attributes[:transport] || :http
       @transport_options = attributes[:transport_options] || {}
       @timeout = attributes[:timeout] || 30
       @ssl_version = attributes[:ssl_version] || :TLSv1
@@ -59,26 +57,6 @@ module KonoEppClient #:nodoc:
     # Closes the connection to the EPP server.
     def close_connection
       @connection.close
-    end
-
-    # Sends an XML request to the EPP server, and receives an XML response.
-    # <tt><login></tt> and <tt><logout></tt> requests are also wrapped
-    # around the request, so we can close the socket immediately after
-    # the request is made.
-    def request(xml)
-      # open_connection
-
-      # @logged_in = true if login
-
-      begin
-        @response = send_request(xml)
-      ensure
-        if @logged_in && !old_server
-          @logged_in = false if logout
-        end
-      end
-
-      return @response
     end
 
     # Sends a standard login request to the EPP server.
@@ -267,8 +245,6 @@ module KonoEppClient #:nodoc:
       #       e successivamente viene utilizzato sempre quello?
       Timeout.timeout @timeout do
         case @transport
-        when :tcp
-          @connection = KonoEppClient::Transport::TcpTransport.new(server, port)
         when :http
 
           options = {
@@ -277,7 +253,8 @@ module KonoEppClient #:nodoc:
           }.merge(@transport_options)
 
           @connection = KonoEppClient::Transport::HttpTransport.new(server, port, **options)
-
+        else
+          raise "Not Implemented #{@transport}"
         end
       end
     end

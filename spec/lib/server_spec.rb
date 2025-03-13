@@ -16,12 +16,11 @@ RSpec.describe KonoEppClient::Server do
       expect(instance).to have_attributes(
                             **params,
                             port: 700,
-                            old_server: false,
                             lang: "en",
                             services: ["urn:ietf:params:xml:ns:domain-1.0", "urn:ietf:params:xml:ns:contact-1.0", "urn:ietf:params:xml:ns:host-1.0"],
                             extensions: [],
                             version: "1.0",
-                            transport: :tcp,
+                            transport: :http,
                             transport_options: {},
                             timeout: 30,
                             ssl_version: :TLSv1
@@ -31,11 +30,19 @@ RSpec.describe KonoEppClient::Server do
 
   describe "#open_connection" do
 
+    let(:params) {
+      super().merge(
+        transport: :http,
+      )
+    }
+
     it "default transport" do
 
-      double = instance_double(KonoEppClient::Transport::TcpTransport)
+      double = instance_double(KonoEppClient::Transport::HttpTransport)
 
-      expect(KonoEppClient::Transport::TcpTransport).to receive(:new).with(params[:server], 700).and_return(double)
+      expect(KonoEppClient::Transport::HttpTransport).to receive(:new).with(
+        params[:server],
+        700, ssl_version: :TLSv1, cookie_file: "abc.cookies.pstore").and_return(double)
 
       expect { instance.open_connection }.to change { instance.instance_variable_get(:@connection) }.
         to(double)
@@ -45,7 +52,6 @@ RSpec.describe KonoEppClient::Server do
 
       let(:params) {
         super().merge(
-          transport: :http,
           transport_options: {cookie_file: "file_to_coockies"},
         )
       }
@@ -109,7 +115,7 @@ RSpec.describe KonoEppClient::Server do
     it {
       expect(instance).to receive(:send_command) do |command|
         expect(command.to_s).to have_xpath("//domain:create//domain:name[text()='architest.it']", {"domain" => "urn:ietf:params:xml:ns:domain-1.0"})
-        expect(command.to_s).not_to have_xpath("//extension//secDNS:create", {"secDNS"=>"urn:ietf:params:xml:ns:secDNS-1.1"})
+        expect(command.to_s).not_to have_xpath("//extension//secDNS:create", {"secDNS" => "urn:ietf:params:xml:ns:secDNS-1.1"})
       end
 
       instance.create_domain(name: 'architest.it', nameservers: [])
@@ -123,7 +129,7 @@ RSpec.describe KonoEppClient::Server do
     it {
       expect(instance).to receive(:send_command) do |command|
         expect(command.to_s).to have_xpath("//domain:update//domain:name[text()='architest.it']", {"domain" => "urn:ietf:params:xml:ns:domain-1.0"})
-        expect(command.to_s).not_to have_xpath("//extension//secDNS:update", {"secDNS"=>"urn:ietf:params:xml:ns:secDNS-1.1"})
+        expect(command.to_s).not_to have_xpath("//extension//secDNS:update", {"secDNS" => "urn:ietf:params:xml:ns:secDNS-1.1"})
       end
 
       instance.update_domain(name: 'architest.it')
