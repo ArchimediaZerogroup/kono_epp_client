@@ -145,9 +145,9 @@ RSpec.describe KonoEppClient::Server do
         allow(instance).to receive(:send_request)
                              .and_return(file_fixture("login_response_for_dnssec.xml").read)
 
-        expect{
-        instance.login
-        }.to change(instance,:dns_sec_enabled).to(true)
+        expect {
+          instance.login
+        }.to change(instance, :dns_sec_enabled).to(true)
 
       end
 
@@ -166,6 +166,31 @@ RSpec.describe KonoEppClient::Server do
       instance.create_domain(name: 'architest.it', nameservers: [])
 
     }
+
+    it_behaves_like "dnssec activation" do
+
+      it "senza assegnare dnssec data non succede nulla" do
+        expect(instance).to receive(:send_command) do |command|
+          expect(command.to_s).not_to have_xpath("//extension//secDNS:create", {"secDNS" => "urn:ietf:params:xml:ns:secDNS-1.1"})
+        end
+
+        instance.create_domain(name: 'architest.it', nameservers: [])
+      end
+
+      it "assegnando dei valori" do
+        expect(instance).to receive(:send_command) do |command|
+          expect(command.to_s).to have_xpath("//extension//secDNS:create", {"secDNS" => "urn:ietf:params:xml:ns:secDNS-1.1"})
+          expect(command.to_s).to have_xpath("//extension//secDNS:create//secDNS:dsData//secDNS:keyTag[text()='123']", {"secDNS" => "urn:ietf:params:xml:ns:secDNS-1.1"})
+        end
+
+        ds_data = DsData.new(
+          123, :dsa_sha_1, :sha_1, "digest"
+        )
+
+        instance.create_domain(name: 'architest.it', nameservers: [], dns_sec_data: [ds_data])
+      end
+
+    end
 
   end
 
