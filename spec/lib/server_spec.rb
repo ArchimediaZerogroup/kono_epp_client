@@ -12,7 +12,7 @@ RSpec.describe KonoEppClient::Server do
 
   shared_context "dnssec activation" do
     let(:params) {
-      super().merge(enableDNSSec: true)
+      super().merge(enable_dns_sec: true)
     }
   end
 
@@ -103,6 +103,7 @@ RSpec.describe KonoEppClient::Server do
           end
           without_tag("svcs>svcextension")
         end
+        Nokogiri::XML(file_fixture("login_response.xml").read) # Si aspetta un XML di risposta
       end
 
       instance.login
@@ -119,6 +120,7 @@ RSpec.describe KonoEppClient::Server do
             with_tag("exturi", text: "https://nome.estensione")
             with_tag("exturi", text: "altra:estensione")
           end
+          Nokogiri::XML(file_fixture("login_response.xml").read) # Si aspetta un XML di risposta
         end
 
         instance.login
@@ -135,6 +137,7 @@ RSpec.describe KonoEppClient::Server do
             with_tag("exturi", text: "http://www.nic.it/ITNIC-EPP/extsecDNS-1.0")
             with_tag("exturi", text: "urn:ietf:params:xml:ns:secDNS-1.1")
           end
+          Nokogiri::XML(file_fixture("login_response_for_dnssec.xml").read) # Si aspetta un XML di risposta
         end
 
         instance.login
@@ -147,8 +150,19 @@ RSpec.describe KonoEppClient::Server do
 
         expect {
           instance.login
+          expect(instance).to be_dns_sec_enabled
         }.to change(instance, :dns_sec_enabled).to(true)
 
+      end
+
+      it "response for Registrar not accredited" do
+        allow(instance).to receive(:send_request)
+                             .and_return(file_fixture("login_response.xml").read)
+
+        expect {
+          instance.login
+          expect(instance).not_to be_dns_sec_enabled
+        }.not_to change(instance, :dns_sec_enabled)
       end
 
     end
@@ -180,10 +194,14 @@ RSpec.describe KonoEppClient::Server do
       it "assegnando dei valori" do
         expect(instance).to receive(:send_command) do |command|
           expect(command.to_s).to have_xpath("//extension//secDNS:create", {"secDNS" => "urn:ietf:params:xml:ns:secDNS-1.1"})
-          expect(command.to_s).to have_xpath("//extension//secDNS:create//secDNS:dsData//secDNS:keyTag[text()='123']", {"secDNS" => "urn:ietf:params:xml:ns:secDNS-1.1"})
+          expect(command.to_s).to have_xpath(
+                                    "//extension//secDNS:create//secDNS:dsData//secDNS:keyTag[text()='123']",
+                                    {"secDNS" => "urn:ietf:params:xml:ns:secDNS-1.1"}
+                                  )
+
         end
 
-        ds_data = DsData.new(
+        ds_data = KonoEppClient::DsData.new(
           123, :dsa_sha_1, :sha_1, "digest"
         )
 
