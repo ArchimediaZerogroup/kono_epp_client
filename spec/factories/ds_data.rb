@@ -1,5 +1,5 @@
 FactoryBot.define do
-  factory :ds_data, class: "KonoEppClient::DsData" do
+  factory :ds_data, class: "KonoEppClient::DnsSec::DsData" do
     skip_create
 
     key_tag { 123 }

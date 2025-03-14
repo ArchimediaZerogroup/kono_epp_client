@@ -1,7 +1,7 @@
-RSpec.describe KonoEppClient::DsData do
+RSpec.describe KonoEppClient::DnsSec::DsData do
 
   let(:instance) {
-    KonoEppClient::DsData.new(123, :dsa_sha_1, :sha_1, "digest")
+    KonoEppClient::DnsSec::DsData.new(123, :dsa_sha_1, :sha_1, "digest")
   }
 
   it "valid instance" do
@@ -32,7 +32,7 @@ RSpec.describe KonoEppClient::DsData do
     end
 
     with_them do
-      it { expect { KonoEppClient::DsData.new(*values) }.to raise_error(expectation) }
+      it { expect { KonoEppClient::DnsSec::DsData.new(*values) }.to raise_error(expectation) }
     end
   end
 

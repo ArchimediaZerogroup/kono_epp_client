@@ -1,5 +1,5 @@
 # frozen_string_literal: true
-module KonoEppClient
+module KonoEppClient::DnsSec
   class DsData < REXML::Element
 
     attr_accessor :key_tag, :alg, :digest_type, :digest
