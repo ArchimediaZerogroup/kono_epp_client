@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<epp
+  xmlns:contact="urn:ietf:params:xml:ns:contact-1.0"
+  xmlns:domain="urn:ietf:params:xml:ns:domain-1.0"
+  xmlns:extepp="http://www.nic.it/ITNIC-EPP/extepp-2.0"
+  xmlns:extdom="http://www.nic.it/ITNIC-EPP/extdom-2.0"
+  xmlns:extcon="http://www.nic.it/ITNIC-EPP/extcon-1.0"
+  xmlns:rgp="urn:ietf:params:xml:ns:rgp-1.0"
+  xmlns="urn:ietf:params:xml:ns:epp-1.0">
+  <response>
+    <result code="1000">
+      <msg lang="en">Command completed successfully</msg>
+    </result>
+    <extension>
+      <extepp:creditMsgData>
+        <extepp:credit>48739.112</extepp:credit>
+      </extepp:creditMsgData>
+    </extension>
+    <trID>
+      <svTRID>898b1da3-e544-4c47-9251-6f621d4ae37a</svTRID>
+    </trID>
+  </response>
+</epp>

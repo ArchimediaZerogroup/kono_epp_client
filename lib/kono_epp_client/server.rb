@@ -3,11 +3,21 @@ module KonoEppClient #:nodoc:
     include REXML
     include RequiresParameters
 
+    ##
+    # Se la risposta al login contiene questo tipo di chiave-valore, allora la comunicazione può avvenire con
+    # comandi aggiuntivi DNSSEC
+    DNS_CHECK_NS_SET = Set.new([["xmlns:secDNS", "urn:ietf:params:xml:ns:secDNS-1.1"],
+                                ["xmlns:extsecDNS", "http://www.nic.it/ITNIC-EPP/extsecDNS-1.0"]],
+    )
+
     require 'nokogiri'
 
     attr_accessor :tag, :password, :server, :port, :ssl_version, :old_server,
                   :services, :lang, :extensions, :version, :credit, :timeout,
                   :transport, :transport_options
+
+    attr_reader :dns_sec_enabled
+    alias_method :dns_sec_enabled?, :dns_sec_enabled
 
     # ==== Required Attrbiutes
     #
@@ -28,6 +38,7 @@ module KonoEppClient #:nodoc:
     # * <tt>:timeout</tt> - Timeout for connections in seconds. Default to "30"
     # * <tt>:ssl_version</tt> - Version of the ssl protocol versione. Default to TLSv1
     # * <tt>:ssl_version</tt> - Version of the ssl protocol versione. Default to TLSv1
+    # * <tt>:enable_dns_sec</tt> - Try to enable DNSSEC, the response from login command will say it. default false
     #
     def initialize(attributes = {})
       requires!(attributes, :tag, :password, :server)
@@ -45,7 +56,13 @@ module KonoEppClient #:nodoc:
       @timeout = attributes[:timeout] || 30
       @ssl_version = attributes[:ssl_version] || :TLSv1
 
+      if attributes[:enable_dns_sec]
+        @extensions << "urn:ietf:params:xml:ns:secDNS-1.1"
+        @extensions << "http://www.nic.it/ITNIC-EPP/extsecDNS-1.0"
+      end
+
       @logged_in = false
+      @dns_sec_enabled = false
     end
 
     def connect_and_hello
@@ -70,7 +87,14 @@ module KonoEppClient #:nodoc:
       login.services = services
       login.extensions = extensions
 
-      send_command(login)
+      response = send_command(login)
+
+      response_set = Set.new(response.namespaces.to_a)
+      if response_set.superset?(DNS_CHECK_NS_SET)
+        @dns_sec_enabled = true
+      end
+
+      response
     end
 
     def change_password(new_password)
@@ -131,6 +155,10 @@ module KonoEppClient #:nodoc:
     end
 
     def create_domain(options)
+      dns_sec_data = options.delete(:dns_sec_data)||[]
+      if dns_sec_enabled?
+        options[:dns_sec_data] = dns_sec_data
+      end
       domain = Commands::CreateDomain.new options
       send_command(domain)
     end
@@ -140,6 +168,10 @@ module KonoEppClient #:nodoc:
     end
 
     def update_domain(options)
+      dns_sec_data = options.delete(:dns_sec_data)||[]
+      if dns_sec_enabled?
+        options[:dns_sec_data] = dns_sec_data
+      end
       domain = Commands::UpdateDomain.new options
       send_command(domain)
     end
@@ -208,8 +240,7 @@ module KonoEppClient #:nodoc:
                                        namespaces)
       reason_code = xmlns_reason_code.text.strip.to_i unless xmlns_reason_code.empty?
 
-      credit_msg = xml.xpath("//extepp:credit/text ()",
-                             namespaces)
+      credit_msg = xml.xpath("//extepp:credit/text ()", namespaces)
       @credit = credit_msg.text.to_f unless credit_msg.empty?
 
       if expected_result === response_code

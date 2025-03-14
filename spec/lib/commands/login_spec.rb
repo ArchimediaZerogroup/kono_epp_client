@@ -84,19 +84,4 @@ RSpec.describe KonoEppClient::Commands::Login do
     end
   end
 
-  # describe "#version" do
-  #   subject { instance.version }
-  #   it { is_expected.to be_nil }
-  #
-  #   context "with versione" do
-  #     let(:instance) {
-  #       super().tap { |e| e.version = "1.0" }
-  #     }
-  #     it { is_expected.to be == "1.0" }
-  #     it "xml", snapshot: "xml" do
-  #       expect(xml).to have_tag("command>login>options>version", text: "1.0")
-  #     end
-  #   end
-  # end
-
 end

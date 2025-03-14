@@ -46,7 +46,7 @@ RSpec.describe KonoEppClient::Commands::UpdateDomain do
       expect(rendered.to_s.downcase).to have_tag("update>add>ns") do
         with_tag("hostattr") do
           with_tag("hostname", text: 'ns3.example.com')
-          without_tag("hostaddr",text:"")
+          without_tag("hostaddr", text: "")
         end
       end
       expect(rendered.to_s.downcase).to have_tag("update>rem>ns") do
@@ -92,7 +92,7 @@ RSpec.describe KonoEppClient::Commands::UpdateDomain do
                       restore: true
                     })
     }
-    it "esiste l'estensione di restore",snapshot: 'xml' do
+    it "esiste l'estensione di restore", snapshot: 'xml' do
       expect(rendered.to_s.downcase).to have_tag("extension>update>restore", with: {op: "request"})
     end
   end
@@ -120,6 +120,22 @@ RSpec.describe KonoEppClient::Commands::UpdateDomain do
         expect(rendered.to_s.downcase).to have_tag("update>chg>registrant", text: options[:registrant].downcase)
       end
     end
+  end
+
+  describe "update DnsSec" do
+    let(:options) {
+      super().merge(dns_sec_data: [
+        KonoEppClient::DnsSec::Add.new(create(:ds_data, key_tag: 9657)),
+        KonoEppClient::DnsSec::Rem.new(create(:ds_data, key_tag: 1685))
+      ])
+    }
+
+    it "build extensions", snapshot: "xml" do
+      expect(rendered.to_s).to have_tag("extension>update>add>dsdata>keytag", text: 9657)
+      expect(rendered.to_s).to have_tag("extension>update>rem>dsdata>keytag", text: 1685)
+    end
+
+
   end
 
 end
