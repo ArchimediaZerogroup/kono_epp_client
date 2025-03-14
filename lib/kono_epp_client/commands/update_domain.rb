@@ -101,6 +101,17 @@ module KonoEppClient::Commands
         end
       end
       # TODO: Registrant
+
+      if options[:dns_sec_data] and options[:dns_sec_data].any?
+        extension = command.elements['extension'] || command.add_element("extension")
+
+        create_list = extension.add_element("secDNS:update", {"xmlns:secDNS"=> "urn:ietf:params:xml:ns:secDNS-1.1"})
+
+        options[:dns_sec_data].each do |d|
+          create_list.add_element(d)
+        end
+      end
+
     end
   end
 end
