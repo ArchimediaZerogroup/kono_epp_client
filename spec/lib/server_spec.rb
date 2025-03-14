@@ -232,6 +232,9 @@ RSpec.describe KonoEppClient::Server do
 
   describe "#update_domain" do
 
+    let(:ds_data_a) { create(:ds_data) }
+    let(:ds_data_b) { create(:ds_data) }
+
     it {
       expect(instance).to receive(:send_command) do |command|
         expect(command.to_s).to have_xpath("//domain:update//domain:name[text()='architest.it']", {"xmlns:domain" => "urn:ietf:params:xml:ns:domain-1.0"})
@@ -239,8 +242,61 @@ RSpec.describe KonoEppClient::Server do
       end
 
       instance.update_domain(name: 'architest.it')
-
     }
+
+    it "impostando i dati del dnssec ma senza aver avuto conferma da NIC di poterlo usare" do
+      expect(instance).to receive(:send_command) do |command|
+        expect(command.to_s).not_to have_xpath("//secDNS:update", {"secDNS" => "urn:ietf:params:xml:ns:secDNS-1.1"})
+      end
+
+      instance.update_domain(name: 'architest.it', dns_sec_data: [KonoEppClient::DnsSec::Add[ds_data_a]])
+    end
+
+    it_behaves_like "dnssec activated" do
+
+      it "senza assegnare dnssec data non succede nulla" do
+        expect(instance).to receive(:send_command) do |command|
+          expect(command.to_s).not_to have_xpath("//secDNS:update", {"secDNS" => "urn:ietf:params:xml:ns:secDNS-1.1"})
+        end
+
+        instance.update_domain(name: 'architest.it')
+      end
+
+      it "assegnando dei valori" do
+        expect(instance).to receive(:send_command) do |command|
+          expect(command.to_s).to have_xpath("//secDNS:update", {"secDNS" => "urn:ietf:params:xml:ns:secDNS-1.1"})
+
+          expect(command.to_s).to have_tag("extension>update") do
+            with_tag("add>dsdata") do
+              with_tag(:keytag, text: ds_data_a.key_tag)
+            end
+            with_tag("rem>dsdata") do
+              with_tag(:keytag, text: ds_data_b.key_tag)
+            end
+          end
+        end
+
+        instance.update_domain(name: 'architest.it', dns_sec_data: [
+          KonoEppClient::DnsSec::Add[ds_data_a],
+          KonoEppClient::DnsSec::Rem[ds_data_b]
+        ])
+      end
+
+      it "cancello tutti i ds_data" do
+        expect(instance).to receive(:send_command) do |command|
+          expect(command.to_s).to have_xpath("//secDNS:update", {"secDNS" => "urn:ietf:params:xml:ns:secDNS-1.1"})
+
+          expect(command.to_s).to have_tag("extension>update") do
+            with_tag("rem>all",text:"true")
+          end
+        end
+
+        instance.update_domain(name: 'architest.it', dns_sec_data: [
+          KonoEppClient::DnsSec::RemAll.new
+        ])
+      end
+
+    end
 
   end
 
