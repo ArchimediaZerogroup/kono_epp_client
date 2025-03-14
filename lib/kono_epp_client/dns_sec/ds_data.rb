@@ -43,6 +43,7 @@ module KonoEppClient::DnsSec
     #                :sha_384         => 4 (SHA-384)
     # @param [String] digest
     def initialize(key_tag, alg, digest_type, digest)
+      key_tag = key_tag.to_i
       @alg = ALG[alg] || raise("Invalid alg #{alg}")
       @digest = digest
       if (0..65535).include?(key_tag)

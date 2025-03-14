@@ -37,7 +37,7 @@ RSpec.describe KonoEppClient::DnsSec::DsData do
   end
 
   it "#to_s" do
-    expect(instance.to_s).to match(file_fixture("example_ds_data.xml").read)
+    expect(instance.to_s).to match(xml_fixture("dns_sec/ds_data.xml"))
   end
 
 end

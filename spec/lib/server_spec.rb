@@ -249,7 +249,7 @@ RSpec.describe KonoEppClient::Server do
         expect(command.to_s).not_to have_xpath("//secDNS:update", {"secDNS" => "urn:ietf:params:xml:ns:secDNS-1.1"})
       end
 
-      instance.update_domain(name: 'architest.it', dns_sec_data: [KonoEppClient::DnsSec::Add[ds_data_a]])
+      instance.update_domain(name: 'architest.it', dns_sec_data: [KonoEppClient::DnsSec::Add.new(ds_data_a)])
     end
 
     it_behaves_like "dnssec activated" do
@@ -266,19 +266,19 @@ RSpec.describe KonoEppClient::Server do
         expect(instance).to receive(:send_command) do |command|
           expect(command.to_s).to have_xpath("//secDNS:update", {"secDNS" => "urn:ietf:params:xml:ns:secDNS-1.1"})
 
-          expect(command.to_s).to have_tag("extension>update") do
-            with_tag("add>dsdata") do
-              with_tag(:keytag, text: ds_data_a.key_tag)
-            end
-            with_tag("rem>dsdata") do
-              with_tag(:keytag, text: ds_data_b.key_tag)
-            end
-          end
+          expect(command.to_s).to have_xpath(
+                                    "//secDNS:update//secDNS:add//secDNS:dsData//secDNS:keyTag[text()='#{ds_data_a.key_tag}']",
+                                    {"secDNS" => "urn:ietf:params:xml:ns:secDNS-1.1"}
+                                  )
+          expect(command.to_s).to have_xpath(
+                                    "//secDNS:update//secDNS:rem//secDNS:dsData//secDNS:keyTag[text()='#{ds_data_b.key_tag}']",
+                                    {"secDNS" => "urn:ietf:params:xml:ns:secDNS-1.1"}
+                                  )
         end
 
         instance.update_domain(name: 'architest.it', dns_sec_data: [
-          KonoEppClient::DnsSec::Add[ds_data_a],
-          KonoEppClient::DnsSec::Rem[ds_data_b]
+          KonoEppClient::DnsSec::Add.new(ds_data_a),
+          KonoEppClient::DnsSec::Rem.new(ds_data_b)
         ])
       end
 
@@ -286,9 +286,10 @@ RSpec.describe KonoEppClient::Server do
         expect(instance).to receive(:send_command) do |command|
           expect(command.to_s).to have_xpath("//secDNS:update", {"secDNS" => "urn:ietf:params:xml:ns:secDNS-1.1"})
 
-          expect(command.to_s).to have_tag("extension>update") do
-            with_tag("rem>all",text:"true")
-          end
+          expect(command.to_s).to have_xpath(
+                                    "//secDNS:update//secDNS:rem//secDNS:all[text()='true']",
+                                    {"secDNS" => "urn:ietf:params:xml:ns:secDNS-1.1"}
+                                  )
         end
 
         instance.update_domain(name: 'architest.it', dns_sec_data: [
