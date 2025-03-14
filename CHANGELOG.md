@@ -2,6 +2,29 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 2.0.0 - 2025-03-14
+#### Documentation
+- Aggiornamento documentazione deploy - (d97e28b) - Marino Bonetti
+#### Features
+- Dns sec enabler (#4) - (05fe060) - Marino Bonetti
+- Complete remove old untrusted TCP connection - (25dc6b1) - Marino Bonetti
+#### Miscellaneous Chores
+- Add Makefile to simplify dev - (c00d3e7) - Marino Bonetti
+- Installa parametric spec - (b858134) - Marino Bonetti
+- Comandi server per update e create - (580461f) - Marino Bonetti
+- Aggiunto debug - (c0f883b) - Marino Bonetti
+- Mancanza Dockerfile - (1b250af) - Marino Bonetti
+#### Tests
+- Remove spec from converage - (11e0614) - Marino Bonetti
+- Fix correct name generation - (83fa9a5) - Marino Bonetti
+- Add test to login command - (a71a366) - Marino Bonetti
+- Correct docs and add branch_coverage - (ab5104c) - Marino Bonetti
+- Fix coverage and eager loading check - (9827181) - Marino Bonetti
+- Matcher Xpath - (049c2db) - Marino Bonetti
+- Add test for standard login - (1f9169a) - Marino Bonetti
+
+- - -
+
 ## 1.0.0 - 2025-03-12
 #### Refactoring
 - Rewrite correct class names - (6df7a34) - Marino Bonetti
