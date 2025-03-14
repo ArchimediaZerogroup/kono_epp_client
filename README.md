@@ -16,3 +16,8 @@ Run rspec
 ```shell
 docker compose run app bundle exec rspec
 ```
+
+Oppure con Makefile:
+```shell
+make
+```
