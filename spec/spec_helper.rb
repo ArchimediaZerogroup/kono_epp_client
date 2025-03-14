@@ -6,6 +6,8 @@ SimpleCov.start do
   enable_coverage :branch
   enable_coverage_for_eval
   add_group "Commands","lib/kono_epp_client/commands"
+  add_filter "spec"
+
 end
 require 'debug'
 require 'kono_epp_client' # and any other gems you need
