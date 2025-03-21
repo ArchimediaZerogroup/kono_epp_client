@@ -10,7 +10,6 @@ module KonoEppClient::Commands
       contact_create = create.add_element("contact:create", {"xmlns:contact" => "urn:ietf:params:xml:ns:contact-1.0",
                                                              "xsi:schemaLocation" => "urn:ietf:params:xml:ns:contact-1.0 contact-1.0.xsd"})
 
-      puts options
       id = contact_create.add_element "contact:id"
       id.text = options[:id]
 

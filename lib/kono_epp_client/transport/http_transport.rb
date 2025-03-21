@@ -27,7 +27,6 @@ module KonoEppClient::Transport
     end
 
     def read
-      #puts @response.body
       @response.body
     end
 
