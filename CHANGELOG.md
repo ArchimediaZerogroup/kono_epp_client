@@ -2,6 +2,12 @@
 All notable changes to this project will be documented in this file. See [conventional commits](https://www.conventionalcommits.org/) for commit guidelines.
 
 - - -
+## 2.0.1 - 2025-03-24
+#### Bug Fixes
+- Remove puts - (0abdc95) - Marino Bonetti
+
+- - -
+
 ## 2.0.0 - 2025-03-14
 #### Documentation
 - Aggiornamento documentazione deploy - (d97e28b) - Marino Bonetti
